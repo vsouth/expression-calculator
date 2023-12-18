@@ -17,25 +17,32 @@ public class ExpressionCalculator {
 
         expression = "(" + expression + ")";
         CharacterIterator it = new StringCharacterIterator(expression);
+        Character previouslyPushed = ' ';
 
         while (it.current() != CharacterIterator.DONE) {
             Character character = it.current();
 
             if (isDigit(character)) {
-                String number = "";
+                StringBuilder number = new StringBuilder();
                 while (isDigit(character) && it.current() != CharacterIterator.DONE) {
-                    number += character.toString();
+                    number.append(character.toString());
                     character = it.next();
                 }
-                values.push(Double.parseDouble(number));
+                previouslyPushed = number.charAt(number.length() - 1);
+                values.push(Double.parseDouble(number.toString()));
                 continue;
 
             } else if (isOperator(character)) {
+                if (character == '-' && (values.isEmpty() || previouslyPushed == '(')) {
+                    values.push(0.0);
+                }
+
                 if (!operators.isEmpty() &&
                         operators.peek() != '(' &&
                         getPriority(character) >= getPriority(operators.peek())) {
                     evalTop(calculator, operators, values);
                 }
+                previouslyPushed = character;
                 operators.push(character);
 
             } else if (character == ')') {

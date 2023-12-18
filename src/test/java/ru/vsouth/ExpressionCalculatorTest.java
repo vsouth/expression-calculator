@@ -25,7 +25,7 @@ class ExpressionCalculatorTest {
     @org.junit.jupiter.api.Test
     void calculate4() {
         ExpressionCalculator expressionCalculator = new ExpressionCalculator();
-        Double result = expressionCalculator.calculate("-1+15*(2-1)");
-        assertEquals(16.0, result, 0.0);
+        Double result = expressionCalculator.calculate("-1+15*(-1+2)");
+        assertEquals(14.0, result, 0.0);
     }
 }
