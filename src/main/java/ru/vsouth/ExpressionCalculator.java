@@ -2,7 +2,8 @@ package ru.vsouth;
 
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 import static java.lang.Character.isDigit;
 
@@ -12,8 +13,8 @@ public class ExpressionCalculator {
         SimpleCalculator calculator = new SimpleCalculator();
 
         // двухстековый алгоритм Дейкстры
-        Stack<Character> operators = new Stack<>();
-        Stack<Double> values = new Stack<>();
+        Deque<Character> operators = new ArrayDeque<>();
+        Deque<Double> values = new ArrayDeque<>();
 
         expression = "(" + expression + ")";
         CharacterIterator it = new StringCharacterIterator(expression);
@@ -56,7 +57,7 @@ public class ExpressionCalculator {
         return values.pop();
     }
 
-    private void evalTop(SimpleCalculator calculator, Stack<Character> operators, Stack<Double> values) {
+    private void evalTop(SimpleCalculator calculator, Deque<Character> operators, Deque<Double> values) {
         Character operator = operators.pop();
         Double b = values.pop();
         Double a = values.pop();
