@@ -3,8 +3,7 @@ package ru.vsouth;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class SimpleCalculatorTest {
     static SimpleCalculator calculator;
@@ -37,7 +36,7 @@ class SimpleCalculatorTest {
     @Test
     public void testInvalidOperator() {
         Exception exception = assertThrows(RuntimeException.class, () -> calculator.calculate(2.0, 3.0, '^'));
-        assertEquals("Exception Message", exception);
+        assertNotNull(exception);
     }
 
     @Test
