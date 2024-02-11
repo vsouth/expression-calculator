@@ -14,47 +14,65 @@ public class ExpressionCalculator {
 
         // двухстековый алгоритм Дейкстры
         Deque<Character> operators = new ArrayDeque<>();
+        operators.push('(');
         Deque<Double> values = new ArrayDeque<>();
-
-        expression = "(" + expression + ")";
         CharacterIterator it = new StringCharacterIterator(expression);
-        Character previouslyPushed = ' ';
 
         while (it.current() != CharacterIterator.DONE) {
-            Character character = it.current();
-
+            char character = it.current();
             if (isDigit(character)) {
-                StringBuilder number = new StringBuilder();
-                while (isDigit(character) && it.current() != CharacterIterator.DONE) {
-                    number.append(character.toString());
-                    character = it.next();
-                }
-                previouslyPushed = number.charAt(number.length() - 1);
-                values.push(Double.parseDouble(number.toString()));
-                continue;
-
-            } else if (isOperator(character)) {
-                if (character == '-' && (values.isEmpty() || previouslyPushed == '(')) {
-                    values.push(0.0);
-                }
-
-                if (!operators.isEmpty() &&
-                        operators.peek() != '(' &&
-                        getPriority(character) >= getPriority(operators.peek())) {
-                    evalTop(calculator, operators, values);
-                }
-                previouslyPushed = character;
-                operators.push(character);
-
-            } else if (character == ')') {
-                while (!operators.isEmpty() && operators.peek() != '(') {
-                    evalTop(calculator, operators, values);
-                }
-                operators.pop();
+                values.push(parseNumber(it, character));
+                character = it.current();
+            }
+            if (isOperator(character)) {
+                pushOperator(calculator, operators, values, character);
+                character = it.current();
+            }
+            if (character == ')') {
+                evalTopWhilePossible(calculator, operators, values);
             }
             it.next();
         }
+        evalTopWhilePossible(calculator, operators, values);
         return values.pop();
+    }
+
+    private void pushOperator(SimpleCalculator calculator, Deque<Character> operators, Deque<Double> values, char character) {
+        addZeroIfNeeded(operators, values, character);
+        evalTopIfNeeded(calculator, operators, values, character);
+        operators.push(character);
+    }
+
+    private void evalTopWhilePossible(SimpleCalculator calculator, Deque<Character> operators, Deque<Double> values) {
+        while (!operators.isEmpty() && operators.peek() != '(') {
+            evalTop(calculator, operators, values);
+        }
+        operators.pop();
+    }
+
+    private void evalTopIfNeeded(SimpleCalculator calculator, Deque<Character> operators, Deque<Double> values, char character) {
+        if (!operators.isEmpty()) {
+            if (operators.peek() != '(' && getPriority(character) >= getPriority(operators.peek())) {
+                evalTop(calculator, operators, values);
+            }
+        }
+    }
+
+    private void addZeroIfNeeded(Deque<Character> operators, Deque<Double> values, char character) {
+        if (!operators.isEmpty()) {
+            if (character == '-' && (operators.peek() == '(')) {
+                values.push(0.0);
+            }
+        }
+    }
+
+    private Double parseNumber(CharacterIterator it, Character character) {
+        StringBuilder number = new StringBuilder();
+        while ((isDigit(character) || isDot(character)) && it.current() != CharacterIterator.DONE) {
+            number.append(character.toString());
+            character = it.next();
+        }
+        return Double.valueOf(number.toString());
     }
 
     private void evalTop(SimpleCalculator calculator, Deque<Character> operators, Deque<Double> values) {
@@ -67,6 +85,10 @@ public class ExpressionCalculator {
 
     private Boolean isOperator(Character o) {
         return "/*+-(".indexOf(o) > -1;
+    }
+
+    private Boolean isDot(Character o) {
+        return o.equals('.');
     }
 
     private int getPriority(Character o) {
