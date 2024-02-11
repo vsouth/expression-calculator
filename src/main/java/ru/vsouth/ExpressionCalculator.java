@@ -66,10 +66,10 @@ public class ExpressionCalculator {
         }
     }
 
-    private Double parseNumber(CharacterIterator it, Character character) {
+    protected Double parseNumber(CharacterIterator it, Character character) {
         StringBuilder number = new StringBuilder();
-        while ((isDigit(character) || isDot(character)) && it.current() != CharacterIterator.DONE) {
-            number.append(character.toString());
+        while ((isDigit(character) || character.equals('.')) && it.current() != CharacterIterator.DONE) {
+            number.append(character);
             character = it.next();
         }
         return Double.valueOf(number.toString());
@@ -83,15 +83,11 @@ public class ExpressionCalculator {
     }
 
 
-    private Boolean isOperator(Character o) {
+    protected Boolean isOperator(Character o) {
         return "/*+-(".indexOf(o) > -1;
     }
 
-    private Boolean isDot(Character o) {
-        return o.equals('.');
-    }
-
-    private int getPriority(Character o) {
+    protected int getPriority(Character o) {
         switch (o) {
             case '*':
             case '/':
